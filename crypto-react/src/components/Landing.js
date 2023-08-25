@@ -4,11 +4,15 @@ import React,{useState,useEffect} from 'react';
 import { getCoin } from '../services/api';
 //components
 import Loader from './Loader';
+import Coin from './Coin';
+//css
+import styles from '../components/Landing.module.css';
 
 
 const Landing = () => {
 
     const [coins,setCoins] = useState([]);
+    const [search,setSearch] = useState("");
 
     useEffect(()=>{
         const fetchAPI = async () =>{
@@ -17,13 +21,30 @@ const Landing = () => {
         }
         fetchAPI();
     },[]);
+
+    const searchHandler = event =>{
+       console.log(setSearch(event.target.value)) 
+    }
+
+    const searchedCoins = coins.filter(coin => coin.name.toLowerCase().includes(search.toLowerCase()));
+
     return (
         <>
-         <input type = "text" placeholder = "Search"/>  
+         <input className={styles.input} type = "text" placeholder = "Search" value = {search} onChange ={searchHandler}/>  
          {
              coins.length ?
-             <div>
-             {coins.map(coin => <p key = {coin.id}>{coin.name}</p>)}
+             <div className={styles.coinContainer}>
+             {
+              searchedCoins.map(coin => <Coin
+              key ={coin.id}
+              name ={coin.name}
+              image ={coin.image}
+              symbol={coin.symbol}
+              price={coin.current_price}
+              marketCap = {coin.market_cap}
+              priceChange={coin.price_change_percentage_24h}
+               />)
+            }
         </div> 
         : <Loader/>
          }
